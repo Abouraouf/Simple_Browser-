@@ -24,5 +24,10 @@ class Texttype : public NodeType
 struct Element
 {
 	std::string type;
-	std::map<std::string& type,>
+	std::map<std::string, std::string> attr;
+};
+
+class Elements
+{
+
 };
