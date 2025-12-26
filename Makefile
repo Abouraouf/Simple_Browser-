@@ -1,8 +1,8 @@
 NAME =  program
-SOURCES = 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+SOURCES = $(wildcard src/dom/*.cpp) $(wildcard src/utils/*.cpp) main.cpp
+FLAGS = -Wall -Wextra -Werror
 OBJ = $(SOURCES:.cpp=.o)
-HEADER = 
+HEADER = include/*.hpp
 %.o: %.cpp $(HEADER)
 	c++ $(FLAGS) -c $< -o $@
 
@@ -12,7 +12,7 @@ $(NAME): $(OBJ)
 all: $(NAME)
 
 clean:
-	rm -f $(OBJ)
+	rm -f src/**/*.o main.o
 
 fclean: clean
 	rm -f $(NAME)
