@@ -5,6 +5,7 @@
 int main ()
 {
   HtmlParser html;
-  HTMLElement* mahdi =  html.Htmlparser("<div> <h1> <p>Text</p> </h2> </div>");
+  // std::string html = "<div> <h1> <p>Text</p> </h1> </div>";
+  HTMLElement* mahdi =  html.Htmlparser("<html><body><h1>Title<div id=\"main\" class=\"test\"><p>Hello <em>world</em>!</p></div></body></html>");
   print_tree(mahdi);
 }

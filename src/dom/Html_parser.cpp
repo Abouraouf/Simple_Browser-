@@ -69,19 +69,22 @@ HTMLElement *HtmlParser::Htmlparser(string input)
     } else if (state == STATE_END_TAG) {
       lastparent->textContent += c;
     } else if (state == STATE_BEGIN_CLOSING_TAG) {
-      if (c != '>')
-        lastparent->closing_tag += c;
-      if (c == '>') {
-        if (lastparent->tagName == lastparent->closing_tag)
-          lastparent = lastparent->parentElement;
-        else
-        {
-          if (lastparent->closing_tag == lastparent->parentElement->tagName)
-              lastparent->parentElement->closing_tag = lastparent->closing_tag;
-          lastparent->parse_error = "Expected </" + lastparent->tagName + "> but found </" + lastparent->closing_tag + ">";
-          lastparent->closing_tag.clear();
+          if (c != '>') {
+        lastparent->closing_tag += c;  // keep accumulating the closing tag name
+    } else { // closing tag finished
+        // Walk up the tree to find a matching open tag
+        HTMLElement* node = lastparent;
+        while (node && node->tagName != lastparent->closing_tag) {
+            node->parse_error = "Expected </" + node->tagName + "> but found </" + lastparent->closing_tag + ">";
+            node = node->parentElement;
         }
+        if (node) {
+            lastparent = node->parentElement; // properly close the matching node
+            
         }
+        lastparent->closing_tag.clear(); // reset for next closing tag
+        state = STATE_END_TAG;            // back to normal text state
+    }
     }
   }
   return root;

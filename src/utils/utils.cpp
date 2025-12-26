@@ -14,9 +14,11 @@ void print_tree(HTMLElement* node, int depth)
     if (!node->textContent.empty())
         cout << " : " << node->textContent;
     else
-        cout << "it is empty" << endl;
+        cout << "it is empty";
     if (!node->closing_tag.empty())
-      cout << " </" << node->closing_tag << ">" << endl;
+      cout <<"  "+ node->closing_tag;
+    if (!node->parse_error.empty())
+      cout << "   error: " + node->parse_error << endl;
     cout << "\n";
 
     for (auto child : node->children)
