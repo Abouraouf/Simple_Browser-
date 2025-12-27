@@ -4,14 +4,10 @@
 //constructor and distructor
 HtmlParser::HtmlParser()
 {
-  try {
     root = new HTMLElement;
-  }
-  catch (const std::bad_alloc& e){
-    std::cerr << "Allocation failed in constructor" << std::endl;
-  }
-  lastparent = root;
-  state = STATE_INIT;
+  	lastparent = root;
+  	state = STATE_INIT;
+	// continu later
 }
 
 HtmlParser::~HtmlParser()
@@ -19,15 +15,48 @@ HtmlParser::~HtmlParser()
 	delete root;
 }
 
-// checking errors
-bool  HtmlParser::check_closing_tag(const char* input)
+void HtmlParser::Html_tags(HTMLElement*& node)
 {
-    cout << input << endl;
-    return true;
+     static const unordered_set<std::string> normalTags = {
+        "html","head","body","div","p","h1","h2","h3","h4","h5","h6",
+        "span","a","ul","ol","li","section","article","header","footer",
+        "nav","main","aside","strong","em","title"
+    };
+    if(normalTags.count(node->tagName))
+        node->tag_type = TAG_NORMAL;
+    else
+    {
+      node->tag_type = TAG_UNKNOWN;
+	node->parse_error = std::string("Unknown tag <") + tagName + "> encountered";
+    }
+}
+
+
+void parent_creation(const std::string& tagName, HTMLElement*& lastparent)
+{
+    HTMLElement *parent = new HTMLElement();
+    parent->parentElement = lastparent;
+    parent->tagName = tagName;
+    lastparent->children.push_back(parent);
+    lastparent = parent;
+}
+
+//checks for unmatched tags
+void	check_unmatched_tags(HTMLElement*& lastparent) // check this when you come back
+{
+	HTMLElement* node = lastparent;
+    while (node && node->tagName != lastparent->closing_tag) {
+        node->parse_error = "Expected </" + node->tagName + "> but found </" + lastparent->closing_tag + ">";
+        node = node->parentElement;
+    }
+
+    if (node) {
+        lastparent = node->parentElement;
+    }
 }
 
 //parser
-HTMLElement *HtmlParser::Htmlparser(string input)
+HTMLElement *HtmlParser::Htmlparser(const string& input)
 {
   string tagName = "";
   for (auto c : input) {
@@ -45,47 +74,27 @@ HTMLElement *HtmlParser::Htmlparser(string input)
         state = STATE_READING_ATTRIBUTES;
       } else if(c == '>') {
         state = STATE_END_TAG;
-
-        auto parent = new HTMLElement(); 
-        parent->tagName = tagName;
-        parent->parentElement = lastparent;
-
-        lastparent->children.push_back(parent);
-        lastparent = parent;
+        parent_creation(tagName, lastparent);
+		Html_tags(lastparent);
       } else {
         tagName += c;
       }
     } else if(state == STATE_READING_ATTRIBUTES) {
       if (c == '>') {
         state = STATE_END_TAG;
-
-        HTMLElement* parent = new HTMLElement(); 
-        parent->tagName = tagName;
-        parent->parentElement = lastparent;
-        
-        lastparent->children.push_back(parent);
-        lastparent = parent;
+        parent_creation(tagName, lastparent);
       }
     } else if (state == STATE_END_TAG) {
       lastparent->textContent += c;
     } else if (state == STATE_BEGIN_CLOSING_TAG) {
           if (c != '>') {
-        lastparent->closing_tag += c;  // keep accumulating the closing tag name
-    } else { // closing tag finished
-        // Walk up the tree to find a matching open tag
-        HTMLElement* node = lastparent;
-        while (node && node->tagName != lastparent->closing_tag) {
-            node->parse_error = "Expected </" + node->tagName + "> but found </" + lastparent->closing_tag + ">";
-            node = node->parentElement;
+        lastparent->closing_tag += c;
+    } else {
+        check_unmatched_tags(lastparent);
+        lastparent->closing_tag.clear();
+        state = STATE_END_TAG;
         }
-        if (node) {
-            lastparent = node->parentElement; // properly close the matching node
-            
         }
-        lastparent->closing_tag.clear(); // reset for next closing tag
-        state = STATE_END_TAG;            // back to normal text state
     }
-    }
-  }
   return root;
 }

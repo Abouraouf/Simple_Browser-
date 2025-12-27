@@ -4,11 +4,13 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
+#include <unordered_set>
 using namespace std;
 
 
 
 class HTMLElement;
+
 
 class HtmlParser
 {
@@ -19,13 +21,12 @@ class HtmlParser
 		HTMLElement	*root;
 		HTMLElement	*lastparent;
 		HTMLElement	*parent;
-		State state;
+		State 		state;
     	std::string tagName;
 	public:
 		HtmlParser();
-		HTMLElement *Htmlparser(string input);
-		bool		check_closing_tag(const char* input);
-		bool		check_bad_tags(string input);
+		HTMLElement *Htmlparser(const string& input);
+		void		Html_tags(HTMLElement*& node);
 		~HtmlParser();
 		
 };

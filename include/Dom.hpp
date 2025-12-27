@@ -7,6 +7,8 @@
 
 using namespace std;
 
+enum HtmlTag {TAG_UNKNOWN = -1, TAG_NORMAL, TAG_SELF_CLOSING};
+
 class NodeType
 {
 	public:
@@ -28,6 +30,7 @@ class HTMLElement
 {
 public:
   string tagName;
+  HtmlTag tag_type;
   string closing_tag;
   vector<struct HTMLElement *> children;
   struct HTMLElement *parentElement;
