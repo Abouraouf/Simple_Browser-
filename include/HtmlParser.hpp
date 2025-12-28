@@ -26,7 +26,7 @@ class HtmlParser
 	public:
 		HtmlParser();
 		HTMLElement *Htmlparser(const string& input);
-		void		Html_tags(HTMLElement*& node);
+		static void		Html_tags(HTMLElement*& node);
 		~HtmlParser();
 		
 };

@@ -4,10 +4,12 @@
 
 int main ()
 {
-  HtmlParser html;
+  std::string html = "<html><head><title>Sample Page</title><meta charset=\"UTF-8\" /><link rel=\"stylesheet\" href=\"style.css\" /></head><body><header><h1>Welcome to My Page</h1><nav><ul><li><a href=\"#\">Home</a></li><li><a href=\"#\">About</a></li><li><a href=\"#\">Contact</a></li></ul></nav></header><main><section><h2>Section Title</h2><p>This is a paragraph with <strong>strong</strong> and <em>emphasized</em> text.<br /></p><img src=\"image.png\" /><input type=\"text\" placeholder=\"Your name\" /><p>This paragraph has no closing tag</section></main><footer><p>Footer content here<hr /></p></footer></body></html>";
+
   try
   {
-  	HTMLElement* mahdi =  html.Htmlparser("<html><head><asd></asd><title>Test Page</title></head><body><h1>Main Title</h1><div><h2>Section One</h2><p>This is a paragraph with <b>bold</b> text.</p><div><h3>Subsection</h3><p>Another paragraph.</p></div></div><div><h2>Section Two</h2><p>Nested text <span>inside a span</span> continues here.</p><ul><li>Item one</li><li>Item two</li><li>Item three</li></ul></div><footer><p>Footer content</p></footer></body></html>");
+    HtmlParser hh;
+  	HTMLElement* mahdi =  hh.Htmlparser(html);
   	print_tree(mahdi);
   }
   catch (const std::exception& e)

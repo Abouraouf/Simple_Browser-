@@ -22,23 +22,35 @@ void HtmlParser::Html_tags(HTMLElement*& node)
         "span","a","ul","ol","li","section","article","header","footer",
         "nav","main","aside","strong","em","title"
     };
+
+    static const unordered_set<std::string> selfClosing = {
+        "br","hr","img","input","link","meta"
+    };
     if(normalTags.count(node->tagName))
+	{
         node->tag_type = TAG_NORMAL;
-    else
+	}
+	else if (selfClosing.count(node->tagName))
+	{
+        node->tag_type = TAG_SELF_CLOSING;
+	}
+	else
     {
-      node->tag_type = TAG_UNKNOWN;
-	node->parse_error = std::string("Unknown tag <") + tagName + "> encountered";
+		node->tag_type = TAG_UNKNOWN;
+	    node->parse_error = std::string("Unknown tag <") + node->tagName + "> encountered";
     }
 }
 
 
 void parent_creation(const std::string& tagName, HTMLElement*& lastparent)
 {
-    HTMLElement *parent = new HTMLElement();
-    parent->parentElement = lastparent;
-    parent->tagName = tagName;
-    lastparent->children.push_back(parent);
-    lastparent = parent;
+  HTMLElement *parent = new HTMLElement();
+  parent->parentElement = lastparent;
+  parent->tagName = tagName;
+  lastparent->children.push_back(parent);
+	HtmlParser::Html_tags(parent);
+	if (parent->tag_type != TAG_SELF_CLOSING)
+		lastparent = parent;
 }
 
 //checks for unmatched tags
@@ -46,8 +58,8 @@ void	check_unmatched_tags(HTMLElement*& lastparent) // check this when you come 
 {
 	HTMLElement* node = lastparent;
     while (node && node->tagName != lastparent->closing_tag) {
-        node->parse_error = "Expected </" + node->tagName + "> but found </" + lastparent->closing_tag + ">";
-        node = node->parentElement;
+		  node->parse_error = "Expected </" + node->tagName + "> but found </" + lastparent->closing_tag + ">";
+      node = node->parentElement;
     }
 
     if (node) {
@@ -75,14 +87,16 @@ HTMLElement *HtmlParser::Htmlparser(const string& input)
       } else if(c == '>') {
         state = STATE_END_TAG;
         parent_creation(tagName, lastparent);
-		Html_tags(lastparent);
       } else {
-        tagName += c;
+        if (c != '/')
+          tagName += c;
       }
     } else if(state == STATE_READING_ATTRIBUTES) {
       if (c == '>') {
         state = STATE_END_TAG;
         parent_creation(tagName, lastparent);
+        if (lastparent->tag_type == TAG_SELF_CLOSING)
+        	state = STATE_END_TAG;
       }
     } else if (state == STATE_END_TAG) {
       lastparent->textContent += c;

@@ -1,5 +1,5 @@
 NAME =  program
-SOURCES = $(wildcard src/dom/*.cpp) $(wildcard src/utils/*.cpp) main.cpp
+SOURCES = $(wildcard src/dom/*.cpp) $(wildcard src/utils/*.cpp) $(wildcard src/parser/*.cpp) main.cpp
 FLAGS = -Wall -Wextra -Werror
 OBJ = $(SOURCES:.cpp=.o)
 HEADER = include/*.hpp
