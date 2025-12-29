@@ -37,5 +37,3 @@ public:
   string textContent;
   string parse_error;
 };
-
-HTMLElement *HTMLParser(string input);
