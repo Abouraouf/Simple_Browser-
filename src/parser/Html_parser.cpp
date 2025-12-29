@@ -36,7 +36,7 @@ void HtmlParser::Html_tags(HTMLElement*& node)
 	}
 	else
     {
-		node->tag_type = TAG_UNKNOWN;
+		  node->tag_type = TAG_UNKNOWN;
 	    node->parse_error = std::string("Unknown tag <") + node->tagName + "> encountered";
     }
 }

@@ -1,19 +1,37 @@
 #include "include/Dom.hpp"
 #include "include/HtmlParser.hpp"
 #include "include/Utils.hpp"
+#include "include/Render.hpp"
 
-int main ()
+
+int main()
 {
-  std::string html = "<html><head><title>Sample Page</title><meta charset=\"UTF-8\" /><link rel=\"stylesheet\" href=\"style.css\" /></head><body><header><h1>Welcome to My Page</h1><nav><ul><li><a href=\"#\">Home</a></li><li><a href=\"#\">About</a></li><li><a href=\"#\">Contact</a></li></ul></nav></header><main><section><h2>Section Title</h2><p>This is a paragraph with <strong>strong</strong> and <em>emphasized</em> text.<br /></p><img src=\"image.png\" /><input type=\"text\" placeholder=\"Your name\" /><p>This paragraph has no closing tag</section></main><footer><p>Footer content here<hr /></p></footer></body></html>";
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        return 1;
 
-  try
-  {
-    HtmlParser hh;
-  	HTMLElement* mahdi =  hh.Htmlparser(html);
-  	print_tree(mahdi);
-  }
-  catch (const std::exception& e)
-  {
-	std::cout << e.what() << std::endl;
-  }
+    Render render("Browser", SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDL_Renderer* renderer = render.getRenderer();
+
+    bool run = true;
+    SDL_Event event;
+
+    while (run)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+                run = false;
+        }
+
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderClear(renderer);
+
+        // draw later
+
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_Quit();
+    return 0;
 }
+
