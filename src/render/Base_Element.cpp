@@ -37,6 +37,7 @@ Base_Element* Base_Element::rendering_tree(HTMLElement* node, int depth)
     elem->width = 100;
     elem->height = 20;
 	elem->tagName = node->tagName;
+    elem->text_Content = node->textContent;
 
     for (auto child : node->children)
     {
@@ -48,33 +49,45 @@ Base_Element* Base_Element::rendering_tree(HTMLElement* node, int depth)
     return elem;
 }
 
-void Base_Element::render_element(SDL_Renderer* renderer)
+void Base_Element::render_element(SDL_Renderer* renderer, TTF_Font& font)
 {
     if (!renderer) return;
 
     // Draw this element
-    SDL_Rect rect = { x, y, width, height };
+    // SDL_Rect rect = { x, y, width, height };
 
     if (tagName == "div")
-    {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);    // black for div
         cout << tagName << " x : " << x << " y : " << y << endl;
-    }
     else if (tagName == "p")
-    {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  // red for others
         cout << tagName << " x : " << x << " y : " << y << endl;
-    }
-    SDL_RenderFillRect(renderer, &rect);
-
+    // SDL_RenderFillRect(renderer, &rect);
+    
     int current_y = 0;
     if (!tagName.empty())
         current_y = y + height;
+    render_TextContent(renderer, font);
     for (auto* child : children)
     {
         child->y = current_y;
-        child->render_element(renderer);
+        child->render_element(renderer, font);
         if (!tagName.empty())
             current_y += child->height + 5;
+    }
+}
+
+void  Base_Element::render_TextContent(SDL_Renderer* renderer, TTF_Font& font)
+{
+    if (!text_Content.empty())
+    {
+        SDL_Color color = {0, 0, 0, 255}; // white text
+        SDL_Surface* surface = TTF_RenderText_Blended(&font, text_Content.c_str(), color);
+        if (surface)
+        {
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_Rect textRect = { x, y, surface->w, surface->h }; // small padding
+            SDL_RenderCopy(renderer, texture, nullptr, &textRect);
+            SDL_FreeSurface(surface);
+            SDL_DestroyTexture(texture);
+        }
     }
 }

@@ -12,6 +12,18 @@ void rendering(Base_Element* root)
     Render render("Browser", SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_Renderer* renderer = render.getRenderer();
 
+    // ---- Add SDL_ttf initialization and font loading here ----
+    if (TTF_Init() == -1) {
+        std::cerr << "TTF_Init Error: " << TTF_GetError() << std::endl;
+        return;
+    }
+    TTF_Font* font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuMathTeXGyre.ttf", 16);
+    if (!font) {
+        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+        return;
+    }
+    // ----------------------------------------------------------
+
     bool run = true;
     SDL_Event event;
     while (run)
@@ -23,26 +35,32 @@ void rendering(Base_Element* root)
         }
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
-        root->render_element(renderer);
-        
-        // draw later
+
+        root->render_element(renderer, *font); // pass font to render_element
 
         SDL_RenderPresent(renderer);
     }
+
+    // Cleanup
+    TTF_CloseFont(font);
+    TTF_Quit();
     SDL_Quit();
 }
+
 
 int main ()
 {
     HtmlParser mahdi;
-    string html = "<div> "      // Div at (0,0)
-              "<p></p> "    // P at (0,20)
+    string html = "<div>"      // Div at (0,0)
+              "<p>this is a paragraph</p> "    // P at (0,20)
               "<div> "      // Nested Div at (0,45)
-                  "<p></p> " // P at (0,65)
-                  "<p></p> " // P at (0,90)
+                  "<p>paragraph 3</p> " // P at (0,90)
               "</div> "
-              "<p></p> "    // P at (0,115)
-           "</div>";
+              "<p> paragraph 4</p> "    // P at (0,115)
+                "<div>"
+                "<p> paragraph 5 </p>"
+                "</div>"
+            "</div>";
 
 
     HTMLElement *hassan = mahdi.Htmlparser(html);

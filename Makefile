@@ -12,7 +12,8 @@ INCLUDES = -I$(HEADERS_DIR) -I$(HOME)/.local/include/SDL2
 CXXFLAGS = -Wall -Wextra -Werror -D_REENTRANT
 
 # Linker flags
-LDFLAGS = -L$(HOME)/.local/lib -lSDL2
+LDFLAGS  = -L$(HOME)/.local/lib -lSDL2 -lSDL2_ttf
+
 
 # Sources
 SRC = \

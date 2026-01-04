@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include "Dom.hpp"
+#include "Render.hpp"
 using namespace std;
 
 struct SDL_Renderer;  // forward declaration
@@ -25,7 +26,8 @@ public:
 	
 	//rendering
 
-	virtual void render_element(SDL_Renderer* renderer);
+	virtual void render_element(SDL_Renderer* renderer, TTF_Font& font);
+	virtual void render_TextContent(SDL_Renderer* renderer, TTF_Font& font);
 	
 	virtual ~Base_Element();
 };
